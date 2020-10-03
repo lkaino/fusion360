@@ -218,11 +218,16 @@ def print_linuxcnc_tool_table(out_file, tool_library):
     """
     for tool in tool_library.get_tools():
         conv_unit = tool_library.get_unit_converter(tool)
-        out_file.write("t%d p%d z%d d%f ;%s\n" % (tool.num(), # tool num
+        description = ""
+        if tool.vendor():
+            description = tool.vendor() + ": "
+        description += tool.description()
+        
+        out_file.write("T%d P%d Z%d D%f ;%s\n" % (tool.num(), # tool num
                                                   tool.num(), # pocket num
                                                   0, # z offset - manage in the LinuxCNC tool table
                                                   conv_unit(tool.diameter()),
-                                                  tool.vendor() + " - " + tool.description()))
+                                                  description))
 
 
 
@@ -238,7 +243,7 @@ def main():
         output_file = sys.stdout
     else:
         try:
-            output_file = file(output_filename, 'w')
+            output_file = open(output_filename, 'w')
         except IOError as e:
             sys.stderr.write("%s\n" % e)
             sys.exit(-1)
